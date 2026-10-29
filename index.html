@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Asset Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --bg-sidebar: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-surface-hover: #334155;
+            --border-subtle: #1e293b;
+            --border-strong: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-primary: #3b82f6;
+            --accent-primary-hover: #2563eb;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-base); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        aside.sidebar {
+            width: 255px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-strong);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .brand-header {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-primary), #6366f1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .brand-text h2 { font-size: 1rem; font-weight: 700; color: #fff; }
+        .brand-text span { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        nav.nav-menu {
+            padding: 16px 12px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 12px 12px 6px;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        .nav-link:hover { color: var(--text-main); background: var(--bg-surface-hover); }
+        .nav-link.active { color: #fff; background: var(--accent-primary); }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-block { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .avatar {
+            width: 34px;
+            height: 34px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        .user-meta .name { font-size: 0.825rem; font-weight: 600; display: block; white-space: nowrap; text-overflow: ellipsis; }
+        .user-meta .role { font-size: 0.72rem; color: var(--text-muted); }
+
+        main.main-viewport {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        header.top-bar {
+            height: 64px;
+            border-bottom: 1px solid var(--border-strong);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            background: var(--bg-sidebar);
+            flex-shrink: 0;
+        }
+
+        .page-title { font-size: 1.2rem; font-weight: 600; }
+        .action-cluster { display: flex; align-items: center; gap: 10px; }
+
+        .btn {
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-primary { background-color: var(--accent-primary); color: #fff; }
+        .btn-primary:hover { background-color: var(--accent-primary-hover); }
+        .btn-secondary { background-color: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border-strong); }
+        .btn-secondary:hover { background-color: var(--bg-surface-hover); }
+        .btn-success { background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid var(--accent-success); }
+        .btn-success:hover { background-color: var(--accent-success); color: #fff; }
+        .btn-danger { background-color: rgba(239, 68, 68, 0.15); color: #fca5a5; padding: 4px 8px; font-size: 0.78rem; }
+        .btn-danger:hover { background-color: var(--accent-danger); color: #fff; }
+        .btn-small { padding: 4px 8px; font-size: 0.76rem; }
+
+        .content-body { padding: 28px 32px; flex-grow: 1; }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .alert-success { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid var(--accent-success); }
+        .alert-danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid var(--accent-danger); }
+        .alert-info { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid var(--accent-primary); }
+
+        #toastNotify {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #10b981;
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Metrics grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border-strong);
+            border-radius: 8px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .metric-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-surface);
+            color: var(--accent-primary);
+        }
+        .metric-details .count { font-size: 1.35rem; font-weight: 700; }
+        .metric-details .label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 500; margin-top: 2px; }
+
+        /* Filter Panel */
+        .filter-panel {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border-strong);
+            padding: 14px;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-panel input, .filter-panel select {
+            background: var(--bg-base);
+            border: 1px solid var(--border-strong);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .filter-panel input:focus, .filter-panel select:focus { border-color: var(--accent-primary); }
+
+        .table-card {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border-strong);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+        th {
+            background: #111827;
+            padding: 12px 14px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-strong);
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        td { padding: 12px 14px; border-bottom: 1px solid var(--border-subtle); white-space: nowrap; }
+        tr:hover { background-color: var(--bg-surface); }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+        .badge-In-Use { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .badge-In-Storage { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .badge-Under-Maintenance { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .badge-Retired { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+        .badge-warranty-active { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .badge-warranty-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .badge-warranty-danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+        .modal.active { display: flex; }
+        .modal-box {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border-strong);
+            width: 100%;
+            max-width: 680px;
+            border-radius: 8px;
+            padding: 24px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .modal-top h3 { font-size: 1.1rem; font-weight: 600; }
+        .btn-close { background: none; border: none; color: var(--text-muted); cursor: pointer; }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+        .form-row { margin-bottom: 12px; }
+        .form-row label { display: block; font-size: 0.78rem; color: var(--text-muted); font-weight: 500; margin-bottom: 5px; }
+        .form-row input, .form-row select {
+            width: 100%;
+            background: var(--bg-base);
+            border: 1px solid var(--border-strong);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .form-row input:focus, .form-row select:focus { border-color: var(--accent-primary); }
+
+        .template-banner {
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid var(--border-strong);
+            padding: 14px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .template-banner span {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="toastNotify">
+        <i data-feather="check-circle"></i>
+        <span id="toastMsg">Action completed successfully.</span>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand-header">
+            <div class="brand-icon"><i data-feather="box"></i></div>
+            <div class="brand-text">
+                <h2>AssetPro</h2>
+                <span>Enterprise Hub</span>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-label">Main Console</div>
+            <a href="/?tab=assets" class="nav-link {% if active_tab == 'assets' %}active{% endif %}">
+                <i data-feather="grid"></i>
+                <span>Assets Registry</span>
+            </a>
+            {% if user.role in ['Administrator', 'Data_Entry'] %}
+            <a href="#" class="nav-link" onclick="toggleModal('modalCreate')">
+                <i data-feather="plus-circle"></i>
+                <span>Register Asset</span>
+            </a>
+            <a href="#" class="nav-link" onclick="toggleModal('modalUpload')">
+                <i data-feather="upload-cloud"></i>
+                <span>Bulk Import</span>
+            </a>
+            {% endif %}
+
+            <div class="nav-label">Management</div>
+            <a href="/?tab=categories" class="nav-link {% if active_tab == 'categories' %}active{% endif %}">
+                <i data-feather="layers"></i>
+                <span>Categories</span>
+            </a>
+            <a href="/?tab=locations" class="nav-link {% if active_tab == 'locations' %}active{% endif %}">
+                <i data-feather="map-pin"></i>
+                <span>Locations</span>
+            </a>
+            <a href="/?tab=assignees" class="nav-link {% if active_tab == 'assignees' %}active{% endif %}">
+                <i data-feather="users"></i>
+                <span>Assignees</span>
+            </a>
+
+            <div class="nav-label">System</div>
+            {% if user.role in ['Administrator', 'Auditor'] %}
+            <a href="/?tab=audit" class="nav-link {% if active_tab == 'audit' %}active{% endif %}">
+                <i data-feather="file-text"></i>
+                <span>Audit Logs</span>
+            </a>
+            {% endif %}
+            <a href="/?tab=settings" class="nav-link {% if active_tab == 'settings' %}active{% endif %}">
+                <i data-feather="settings"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-block">
+                <div class="avatar">{{ user.username[:2]|upper }}</div>
+                <div class="user-meta">
+                    <span class="name">{{ user.full_name or user.username }}</span>
+                    <span class="role">{{ user.role|replace('_', ' ') }}</span>
+                </div>
+            </div>
+            <a href="/logout" title="Sign Out" style="color: var(--text-muted);"><i data-feather="log-out"></i></a>
+        </div>
+    </aside>
+
+    <!-- MAIN VIEWPORT -->
+    <main class="main-viewport">
+        <header class="top-bar">
+            <div class="page-title">
+                {% if active_tab == 'assets' %}Assets Registry & Lifecycle
+                {% elif active_tab == 'categories' %}Taxonomy & Categories
+                {% elif active_tab == 'locations' %}Locations & Deployment Sites
+                {% elif active_tab == 'assignees' %}Custodians & Assigned Personnel
+                {% elif active_tab == 'audit' %}Security & Compliance Audit Trail
+                {% elif active_tab == 'settings' %}Settings & Access Management
+                {% endif %}
+            </div>
+            <div class="action-cluster">
+                {% if active_tab == 'assets' %}
+                <a href="/assets/export?q={{ search_query }}&category={{ selected_category }}&status={{ selected_status }}&location={{ selected_location }}" class="btn btn-secondary">
+                    <i data-feather="download"></i><span>Export CSV</span>
+                </a>
+                {% endif %}
+                {% if user.role in ['Administrator', 'Data_Entry'] %}
+                <button class="btn btn-primary" onclick="toggleModal('modalCreate')">
+                    <i data-feather="plus"></i><span>Add Asset</span>
+                </button>
+                <button class="btn btn-secondary" onclick="toggleModal('modalUpload')">
+                    <i data-feather="upload"></i><span>Bulk CSV</span>
+                </button>
+                {% endif %}
+            </div>
+        </header>
+
+        <div class="content-body">
+            <!-- Flash Message Alerts -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i data-feather="info"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- TAB 1: ASSETS REGISTRY -->
+            {% if active_tab == 'assets' %}
+                <!-- Live KPI Telemetry Grid -->
+                <section class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon"><i data-feather="database"></i></div>
+                        <div class="metric-details">
+                            <div class="count">{{ assets|length }}</div>
+                            <div class="label">Total Listed Assets</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="color: var(--accent-success);"><i data-feather="dollar-sign"></i></div>
+                        <div class="metric-details">
+                            <div class="count">{{ "{:,.0f}".format(total_fleet_cost) }}</div>
+                            <div class="label">Total Capital Cost</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="color: #60a5fa;"><i data-feather="trending-down"></i></div>
+                        <div class="metric-details">
+                            <div class="count">{{ "{:,.0f}".format(total_fleet_book_value) }}</div>
+                            <div class="label">Net Book Value</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon" style="color: {% if warranty_expiring_count > 0 %}var(--accent-warning){% else %}var(--accent-success){% endif %};"><i data-feather="shield"></i></div>
+                        <div class="metric-details">
+                            <div class="count">{{ warranty_expiring_count }}</div>
+                            <div class="label">Warranty Due / Expired</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Search & Dropdown Filter Panel -->
+                <form class="filter-panel" method="GET" action="/">
+                    <input type="hidden" name="tab" value="assets">
+                    <input type="text" name="q" placeholder="Search Tag, Item Name, S/N, Staff, Location, Supplier..." value="{{ search_query }}" style="flex: 2; min-width: 220px;">
+                    
+                    <select name="category" style="flex: 1; min-width: 140px;">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select name="location" style="flex: 1; min-width: 140px;">
+                        <option value="">All Locations</option>
+                        {% for loc in locations %}
+                            <option value="{{ loc }}" {% if selected_location == loc %}selected{% endif %}>{{ loc }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select name="status" style="flex: 1; min-width: 130px;">
+                        <option value="">All Statuses</option>
+                        <option value="In Use" {% if selected_status == 'In Use' %}selected{% endif %}>In Use</option>
+                        <option value="In Storage" {% if selected_status == 'In Storage' %}selected{% endif %}>In Storage</option>
+                        <option value="Under Maintenance" {% if selected_status == 'Under Maintenance' %}selected{% endif %}>Under Maintenance</option>
+                        <option value="Retired" {% if selected_status == 'Retired' %}selected{% endif %}>Retired</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-secondary">Apply</button>
+                    {% if search_query or selected_category or selected_status or selected_location %}
+                        <a href="/?tab=assets" class="btn btn-secondary">Clear</a>
+                    {% endif %}
+                </form>
+
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tag</th>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Custodian</th>
+                                <th>Status</th>
+                                <th>Net Value</th>
+                                <th>Warranty</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for asset in assets %}
+                            <tr>
+                                <td><strong style="color: #60a5fa;">{{ asset['asset_tag'] }}</strong></td>
+                                <td>
+                                    <strong>{{ asset['name'] }}</strong>
+                                    {% if asset['item_type'] %}<div style="font-size: 0.72rem; color: var(--text-muted);">{{ asset['item_type'] }}</div>{% endif %}
+                                </td>
+                                <td>{{ asset['category'] }}</td>
+                                <td>{{ asset['location'] or '—' }}</td>
+                                <td>{{ asset['assigned_to'] or 'Unassigned' }}</td>
+                                <td><span class="badge badge-{{ asset['status']|replace(' ', '-') }}">{{ asset['status'] }}</span></td>
+                                <td>{{ "{:,.2f}".format(asset['current_book_value']) }}</td>
+                                <td>
+                                    <span class="badge badge-warranty-{{ asset['warranty_class'] }}">{{ asset['warranty_status'] }}</span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <div style="display: inline-flex; gap: 6px;">
+                                        <!-- Check-In / Check-Out Toggle -->
+                                        {% if user.role in ['Administrator', 'Data_Entry'] %}
+                                            {% if asset['status'] == 'In Use' %}
+                                                <button type="button" class="btn btn-secondary btn-small" onclick="openCheckinModal({{ asset['id'] }}, '{{ asset['asset_tag'] }}')">
+                                                    Check-In
+                                                </button>
+                                            {% else %}
+                                                <button type="button" class="btn btn-success btn-small" onclick="openCheckoutModal({{ asset['id'] }}, '{{ asset['asset_tag'] }}')">
+                                                    Check-Out
+                                                </button>
+                                            {% endif %}
+                                            <!-- Edit Record -->
+                                            <button type="button" class="btn btn-secondary btn-small" onclick="openEditModal({{ asset['id'] }})">
+                                                Edit
+                                            </button>
+                                        {% endif %}
+                                        <!-- Administrator Delete -->
+                                        {% if user.role == 'Administrator' %}
+                                            <form method="POST" action="/assets/delete/{{ asset['id'] }}" onsubmit="return confirm('Permanently delete {{ asset['name'] }} ({{ asset['asset_tag'] }})?');" style="display:inline;">
+                                                <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 48px;">
+                                    No assets registered matching your search criteria.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            <!-- TAB 2: CATEGORIES -->
+            {% elif active_tab == 'categories' %}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Manage your controlled asset classification list.</p>
+                    {% if user.role in ['Administrator', 'Data_Entry'] %}
+                    <form method="POST" action="/categories/add" style="display: flex; gap: 8px;">
+                        <input type="text" name="name" required placeholder="New Category Name..." style="background: var(--bg-base); border: 1px solid var(--border-strong); color: #fff; padding: 7px 12px; border-radius: 6px; font-size: 0.85rem;">
+                        <button type="submit" class="btn btn-primary btn-small">+ Add Category</button>
+                    </form>
+                    {% endif %}
+                </div>
+
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category Name</th>
+                                <th>Total Assets</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cat in cat_stats %}
+                            <tr>
+                                <td><strong style="color: #fff;"><i data-feather="folder" style="width: 14px; margin-right: 8px;"></i>{{ cat['category'] }}</strong></td>
+                                <td>{{ cat['count'] }} asset(s)</td>
+                                <td style="text-align: right;">
+                                    <a href="/?tab=assets&category={{ cat['category'] }}" class="btn btn-secondary btn-small">Filter Assets</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 40px;">No categories configured.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            <!-- TAB 3: LOCATIONS -->
+            {% elif active_tab == 'locations' %}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Manage facilities, offices, and deployment locations.</p>
+                    {% if user.role in ['Administrator', 'Data_Entry'] %}
+                    <form method="POST" action="/locations/add" style="display: flex; gap: 8px;">
+                        <input type="text" name="name" required placeholder="New Location / Branch..." style="background: var(--bg-base); border: 1px solid var(--border-strong); color: #fff; padding: 7px 12px; border-radius: 6px; font-size: 0.85rem;">
+                        <button type="submit" class="btn btn-primary btn-small">+ Add Location</button>
+                    </form>
+                    {% endif %}
+                </div>
+
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Location / Site</th>
+                                <th>Active Deployments</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loc in loc_stats %}
+                            <tr>
+                                <td><strong style="color: #fff;"><i data-feather="map-pin" style="width: 14px; margin-right: 8px;"></i>{{ loc['loc_name'] }}</strong></td>
+                                <td>{{ loc['count'] }} asset(s)</td>
+                                <td style="text-align: right;">
+                                    <a href="/?tab=assets&location={{ loc['loc_name'] }}" class="btn btn-secondary btn-small">Filter Items</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 40px;">No locations recorded.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            <!-- TAB 4: ASSIGNEES -->
+            {% elif active_tab == 'assignees' %}
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Personnel / Staff Custodian</th>
+                                <th>Issued Hardware Count</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in assignee_stats %}
+                            <tr>
+                                <td><strong style="color: #fff;"><i data-feather="user" style="width: 14px; margin-right: 8px;"></i>{{ a['assignee_name'] }}</strong></td>
+                                <td>{{ a['count'] }} item(s)</td>
+                                <td style="text-align: right;">
+                                    <a href="/?tab=assets&q={{ a['assignee_name'] }}" class="btn btn-secondary btn-small">View Issued</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 40px;">No personnel assignments.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            <!-- TAB 5: AUDIT LOGS -->
+            {% elif active_tab == 'audit' %}
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Activity Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in audit_logs %}
+                            <tr>
+                                <td style="color: var(--text-muted); font-family: monospace;">{{ log['timestamp'] }}</td>
+                                <td><strong>{{ log['username'] }}</strong></td>
+                                <td><span class="badge badge-In-Storage">{{ log['action'] }}</span></td>
+                                <td>{{ log['details'] }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px;">No audit events logged.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            <!-- TAB 6: SETTINGS -->
+            {% elif active_tab == 'settings' %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+                    <!-- Password Update -->
+                    <div class="metric-card" style="flex-direction: column; align-items: flex-start;">
+                        <h3 style="margin-bottom: 16px; font-size: 1rem;"><i data-feather="lock" style="width: 16px; margin-right: 8px;"></i>Change Account Password</h3>
+                        <form method="POST" action="/settings/password" style="width: 100%;">
+                            <div class="form-row">
+                                <label>Current Password</label>
+                                <input type="password" name="current_password" required placeholder="••••••••">
+                            </div>
+                            <div class="form-row">
+                                <label>New Password (min 6 chars)</label>
+                                <input type="password" name="new_password" required placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Update Password</button>
+                        </form>
+                    </div>
+
+                    <!-- System Environment & Template Downloads & Backup -->
+                    <div class="metric-card" style="flex-direction: column; align-items: flex-start;">
+                        <h3 style="margin-bottom: 14px; font-size: 1rem;"><i data-feather="database" style="width: 16px; margin-right: 8px;"></i>System Data & Recovery</h3>
+                        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+                            Download clean CSV templates or create an instant local backup of the SQLite database.
+                        </p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                            {% if user.role == 'Administrator' %}
+                            <button type="button" class="btn btn-primary" onclick="backupDatabase()" style="justify-content: flex-start;">
+                                <i data-feather="save"></i><span>One-Click Backup Database (.db)</span>
+                            </button>
+                            {% endif %}
+                            <button type="button" class="btn btn-secondary" onclick="getTemplate('assets')" style="justify-content: flex-start;">
+                                <i data-feather="download"></i><span>Save assets_template.csv</span>
+                            </button>
+                            {% if user.role == 'Administrator' %}
+                            <button type="button" class="btn btn-secondary" onclick="getTemplate('users')" style="justify-content: flex-start;">
+                                <i data-feather="download"></i><span>Save users_template.csv</span>
+                            </button>
+                            {% endif %}
+                        </div>
+
+                        <div style="margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--border-subtle); width: 100%;">
+                            <p style="font-size: 0.78rem; color: var(--text-muted);">
+                                <strong>Account:</strong> {{ user.username }} ({{ user.role }}) &nbsp;|&nbsp; <strong>Storage:</strong> <code>assets.db</code>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin User Management -->
+                {% if user.role == 'Administrator' %}
+                <div style="margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+                    <!-- Register User Form -->
+                    <div class="metric-card" style="flex-direction: column; align-items: flex-start;">
+                        <h3 style="margin-bottom: 16px; font-size: 1rem;"><i data-feather="user-plus" style="width: 16px; margin-right: 8px;"></i>Register Single User</h3>
+                        <form method="POST" action="/users/create" style="width: 100%;">
+                            <div class="form-row">
+                                <label>Username *</label>
+                                <input type="text" name="username" required placeholder="e.g. jdoe">
+                            </div>
+                            <div class="form-row">
+                                <label>Full Name</label>
+                                <input type="text" name="full_name" placeholder="e.g. Jane Doe">
+                            </div>
+                            <div class="form-row">
+                                <label>Initial Password (min 6 chars) *</label>
+                                <input type="password" name="password" required placeholder="••••••••">
+                            </div>
+                            <div class="form-row">
+                                <label>Assigned Role *</label>
+                                <select name="role">
+                                    <option value="Viewer">Viewer (Read-Only access)</option>
+                                    <option value="Data_Entry">Data Entry Officer (Add & Import Assets)</option>
+                                    <option value="Auditor">Auditor (View Assets & Security Audit Logs)</option>
+                                    <option value="Administrator">Administrator (Full Control)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Create User</button>
+                        </form>
+                    </div>
+
+                    <!-- Bulk User CSV Ingestion -->
+                    <div class="metric-card" style="flex-direction: column; align-items: flex-start;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 10px;">
+                            <h3 style="font-size: 1rem;"><i data-feather="users" style="width: 16px; margin-right: 8px;"></i>Bulk Import Users (.CSV)</h3>
+                            <button type="button" class="btn btn-secondary btn-small" onclick="getTemplate('users')">
+                                <i data-feather="download" style="width: 12px; height: 12px;"></i> Template
+                            </button>
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+                            Upload a spreadsheet containing <code>Username</code>, <code>Password</code>, and <code>Role</code>.
+                        </p>
+                        <form method="POST" action="/users/upload" enctype="multipart/form-data" style="width: 100%;">
+                            <div class="form-row">
+                                <input type="file" name="file" accept=".csv" required style="padding: 14px; border-style: dashed;">
+                            </div>
+                            <button type="submit" class="btn btn-secondary" style="margin-top: 8px; width: 100%;">Upload & Ingest Users</button>
+                        </form>
+
+                        <div class="table-card" style="width: 100%; margin-top: 18px;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Full Name</th>
+                                        <th>Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for u in user_list %}
+                                    <tr>
+                                        <td><strong>{{ u['username'] }}</strong></td>
+                                        <td>{{ u['full_name'] or '—' }}</td>
+                                        <td><span class="badge badge-In-Use">{{ u['role'] }}</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- SHARED DATALISTS FOR CONTROLLED SEARCHABLE DROPDOWNS -->
+    <datalist id="categoryDatalist">
+        {% for cat in categories %}<option value="{{ cat }}">{% endfor %}
+    </datalist>
+
+    <datalist id="locationDatalist">
+        {% for loc in locations %}<option value="{{ loc }}">{% endfor %}
+    </datalist>
+
+    <datalist id="itemTypeDatalist">
+        <option value="Laptop"><option value="Desktop"><option value="Server">
+        <option value="Monitor"><option value="Switch"><option value="Router">
+        <option value="Printer"><option value="Desk"><option value="Vehicle">
+    </datalist>
+
+    <!-- MODAL 1: REGISTER ASSET -->
+    <div class="modal" id="modalCreate">
+        <div class="modal-box">
+            <div class="modal-top">
+                <h3>Register Asset Record</h3>
+                <button class="btn-close" onclick="toggleModal('modalCreate')"><i data-feather="x"></i></button>
+            </div>
+            <form method="POST" action="/assets/create">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label>Item / Device Name *</label>
+                        <input type="text" name="name" required placeholder="e.g. HP Core i7 16GB 512 SSD">
+                    </div>
+                    <div class="form-row">
+                        <label>Asset Tag (Auto if blank)</label>
+                        <input type="text" name="asset_tag" placeholder="e.g. AST-10024">
+                    </div>
+                    <div class="form-row">
+                        <label>Type of Item (Dropdown / Search)</label>
+                        <input type="text" name="item_type" list="itemTypeDatalist" placeholder="Select or type (Laptop, Server...)">
+                    </div>
+                    <div class="form-row">
+                        <label>Category (Dropdown / Search) *</label>
+                        <input type="text" name="category" list="categoryDatalist" required placeholder="Select or type Category">
+                    </div>
+                    <div class="form-row">
+                        <label>Serial / Product ID</label>
+                        <input type="text" name="serial_number" placeholder="e.g. 5CD1234ABC">
+                    </div>
+                    <div class="form-row">
+                        <label>Purchase Date</label>
+                        <input type="date" name="purchase_date">
+                    </div>
+                    <div class="form-row">
+                        <label>Purchase Cost</label>
+                        <input type="number" step="0.01" name="purchase_cost" placeholder="e.g. 850000">
+                    </div>
+                    <div class="form-row">
+                        <label>Supplier / Vendor</label>
+                        <input type="text" name="supplier" placeholder="e.g. Tech Supplies Ltd">
+                    </div>
+                    <div class="form-row">
+                        <label>Warranty Expiry</label>
+                        <input type="date" name="warranty_expiry">
+                    </div>
+                    <div class="form-row">
+                        <label>Location / Site (Dropdown / Search)</label>
+                        <input type="text" name="location" list="locationDatalist" placeholder="Select or type Location">
+                    </div>
+                    <div class="form-row">
+                        <label>Assigned Employee</label>
+                        <input type="text" name="assigned_to" placeholder="e.g. Jane Doe">
+                    </div>
+                    <div class="form-row">
+                        <label>Status</label>
+                        <select name="status">
+                            <option value="In Use">In Use</option>
+                            <option value="In Storage" selected>In Storage</option>
+                            <option value="Under Maintenance">Under Maintenance</option>
+                            <option value="Retired">Retired</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Salvage Value</label>
+                        <input type="number" step="0.01" name="salvage_value" placeholder="e.g. 50000">
+                    </div>
+                    <div class="form-row">
+                        <label>Useful Life (Years)</label>
+                        <input type="number" name="useful_life_years" placeholder="e.g. 5">
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
+                    <button type="button" class="btn btn-secondary" onclick="toggleModal('modalCreate')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save to Registry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: EDIT ASSET (POPULATED DYNAMICALLY) -->
+    <div class="modal" id="modalEdit">
+        <div class="modal-box">
+            <div class="modal-top">
+                <h3>Edit Asset Record: <span id="editTagTitle" style="color: #60a5fa;"></span></h3>
+                <button class="btn-close" onclick="toggleModal('modalEdit')"><i data-feather="x"></i></button>
+            </div>
+            <form id="editAssetForm" method="POST" action="">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label>Item Name *</label>
+                        <input type="text" id="edit_name" name="name" required>
+                    </div>
+                    <div class="form-row">
+                        <label>Type of Item</label>
+                        <input type="text" id="edit_item_type" name="item_type" list="itemTypeDatalist">
+                    </div>
+                    <div class="form-row">
+                        <label>Category *</label>
+                        <input type="text" id="edit_category" name="category" list="categoryDatalist" required>
+                    </div>
+                    <div class="form-row">
+                        <label>Serial / Product ID</label>
+                        <input type="text" id="edit_serial" name="serial_number">
+                    </div>
+                    <div class="form-row">
+                        <label>Purchase Date</label>
+                        <input type="date" id="edit_purchase_date" name="purchase_date">
+                    </div>
+                    <div class="form-row">
+                        <label>Purchase Cost</label>
+                        <input type="number" step="0.01" id="edit_cost" name="purchase_cost">
+                    </div>
+                    <div class="form-row">
+                        <label>Supplier</label>
+                        <input type="text" id="edit_supplier" name="supplier">
+                    </div>
+                    <div class="form-row">
+                        <label>Warranty Expiry</label>
+                        <input type="date" id="edit_warranty" name="warranty_expiry">
+                    </div>
+                    <div class="form-row">
+                        <label>Location</label>
+                        <input type="text" id="edit_location" name="location" list="locationDatalist">
+                    </div>
+                    <div class="form-row">
+                        <label>Assigned Employee</label>
+                        <input type="text" id="edit_assigned_to" name="assigned_to">
+                    </div>
+                    <div class="form-row">
+                        <label>Status</label>
+                        <select id="edit_status" name="status">
+                            <option value="In Use">In Use</option>
+                            <option value="In Storage">In Storage</option>
+                            <option value="Under Maintenance">Under Maintenance</option>
+                            <option value="Retired">Retired</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Salvage Value</label>
+                        <input type="number" step="0.01" id="edit_salvage" name="salvage_value">
+                    </div>
+                    <div class="form-row">
+                        <label>Useful Life (Years)</label>
+                        <input type="number" id="edit_useful_life" name="useful_life_years">
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
+                    <button type="button" class="btn btn-secondary" onclick="toggleModal('modalEdit')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: CHECK-OUT -->
+    <div class="modal" id="modalCheckout">
+        <div class="modal-box" style="max-width: 420px;">
+            <div class="modal-top">
+                <h3>Check-Out Asset: <span id="checkoutTag" style="color: #60a5fa;"></span></h3>
+                <button class="btn-close" onclick="toggleModal('modalCheckout')"><i data-feather="x"></i></button>
+            </div>
+            <form id="checkoutForm" method="POST" action="">
+                <div class="form-row">
+                    <label>Assign to Employee / Custodian *</label>
+                    <input type="text" name="assigned_to" required placeholder="Staff Member Name or ID">
+                </div>
+                <div class="form-row">
+                    <label>Target Location / Office</label>
+                    <input type="text" name="location" list="locationDatalist" placeholder="e.g. Yenagoa HQ, Remote">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+                    <button type="button" class="btn btn-secondary" onclick="toggleModal('modalCheckout')">Cancel</button>
+                    <button type="submit" class="btn btn-success">Confirm Check-Out</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: CHECK-IN -->
+    <div class="modal" id="modalCheckin">
+        <div class="modal-box" style="max-width: 420px;">
+            <div class="modal-top">
+                <h3>Check-In Asset: <span id="checkinTag" style="color: #60a5fa;"></span></h3>
+                <button class="btn-close" onclick="toggleModal('modalCheckin')"><i data-feather="x"></i></button>
+            </div>
+            <form id="checkinForm" method="POST" action="">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+                    Returning this device unassigns the employee and returns the asset status to <strong>In Storage</strong>.
+                </p>
+                <div class="form-row">
+                    <label>Storage Location *</label>
+                    <input type="text" name="location" list="locationDatalist" required value="Warehouse / Storage">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+                    <button type="button" class="btn btn-secondary" onclick="toggleModal('modalCheckin')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Return to Storage</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: BULK CSV ASSET IMPORT -->
+    <div class="modal" id="modalUpload">
+        <div class="modal-box">
+            <div class="modal-top">
+                <h3>Bulk Import Assets via CSV</h3>
+                <button class="btn-close" onclick="toggleModal('modalUpload')"><i data-feather="x"></i></button>
+            </div>
+            
+            <div class="template-banner">
+                <span>Save official CSV template to local Downloads folder:</span>
+                <button type="button" class="btn btn-success" onclick="getTemplate('assets')" style="white-space: nowrap;">
+                    <i data-feather="download"></i><span>Get Template</span>
+                </button>
+            </div>
+
+            <form method="POST" action="/assets/upload" enctype="multipart/form-data">
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+                    Upload your populated <code>assets_template.csv</code>. All 14 columns (Item Name, Type of Item, Category, Serial / Product ID, Purchase Cost, Location, Assigned Employee, Status, etc.) are recognized automatically.
+                </p>
+                <div class="form-row">
+                    <input type="file" name="file" accept=".csv" required style="padding: 16px; border-style: dashed;">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
+                    <button type="button" class="btn btn-secondary" onclick="toggleModal('modalUpload')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Process Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT CONTROLLERS -->
+    <script>
+        feather.replace();
+
+        function toggleModal(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('active');
+        }
+
+        window.onclick = function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        };
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastNotify');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 5500);
+        }
+
+        // Open Pre-populated Edit Modal
+        async function openEditModal(assetId) {
+            try {
+                const res = await fetch('/assets/get/' + assetId);
+                const data = await res.json();
+                
+                document.getElementById('editTagTitle').innerText = data.asset_tag;
+                document.getElementById('editAssetForm').action = '/assets/edit/' + assetId;
+
+                document.getElementById('edit_name').value = data.name || '';
+                document.getElementById('edit_item_type').value = data.item_type || '';
+                document.getElementById('edit_category').value = data.category || '';
+                document.getElementById('edit_serial').value = data.serial_number || '';
+                document.getElementById('edit_purchase_date').value = data.purchase_date || '';
+                document.getElementById('edit_cost').value = data.purchase_cost || '';
+                document.getElementById('edit_supplier').value = data.supplier || '';
+                document.getElementById('edit_warranty').value = data.warranty_expiry || '';
+                document.getElementById('edit_location').value = data.location || '';
+                document.getElementById('edit_assigned_to').value = data.assigned_to || '';
+                document.getElementById('edit_status').value = data.status || 'In Storage';
+                document.getElementById('edit_salvage').value = data.salvage_value || '';
+                document.getElementById('edit_useful_life').value = data.useful_life_years || '';
+
+                toggleModal('modalEdit');
+            } catch (err) {
+                alert('Could not load asset record: ' + err);
+            }
+        }
+
+        function openCheckoutModal(assetId, assetTag) {
+            document.getElementById('checkoutTag').innerText = assetTag;
+            document.getElementById('checkoutForm').action = '/assets/checkout/' + assetId;
+            toggleModal('modalCheckout');
+        }
+
+        function openCheckinModal(assetId, assetTag) {
+            document.getElementById('checkinTag').innerText = assetTag;
+            document.getElementById('checkinForm').action = '/assets/checkin/' + assetId;
+            toggleModal('modalCheckin');
+        }
+
+        // Fail-safe Downloader for desktop pywebview & browsers
+        async function getTemplate(type) {
+            try {
+                const res = await fetch('/api/save-native-template', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: type })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    showToast(data.message);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+
+            // Fallback for standard browsers
+            try {
+                let csvContent = "";
+                const filename = type === 'users' ? 'users_template.csv' : 'assets_template.csv';
+                if (type === 'users') {
+                    csvContent = "Username,Password,Role\njdoe,ChangeMe123,Viewer\nrsmith,StaffPass#2026,Data_Entry\n";
+                } else {
+                    csvContent = "Item Name,Type of Item,Category,Serial / Product ID,Purchase Date,Purchase Cost,Supplier,Warranty Expiry,Location,Assigned Employee,Status,Salvage Value,Useful Life (Years),Depreciation Method\nHP Core i7 16GB 512 SSD,Laptop,IT equipment,5CD1234ABC,2026-01-15,850000,Tech Supplies Ltd,2029-01-15,Yenagoa HQ,Jane Doe,In use,50000,5,straight-line\n";
+                }
+                const link = document.createElement('a');
+                link.setAttribute('href', 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csvContent));
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (e) {}
+        }
+
+        // One-Click DB Backup
+        async function backupDatabase() {
+            try {
+                const res = await fetch('/api/backup-database', { method: 'POST' });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    showToast(data.message);
+                } else {
+                    alert('Backup error: ' + data.message);
+                }
+            } catch (err) {
+                alert('Backup failed: ' + err);
+            }
+        }
+    </script>
+</body>
+</html>
