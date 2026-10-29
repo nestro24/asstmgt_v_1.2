@@ -1,0 +1,6 @@
+asstmgt/
+├── app.py                  # Main backend, desktop wrapper, and routing
+├── assets.db               # SQLite database (auto-initialized if missing)
+├── requirements.txt        # Python dependencies
+└── templates/
+    └── index.html          # Unified dashboard (Forms, Upload, Search, Table)
